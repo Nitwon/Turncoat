@@ -693,8 +693,9 @@ class Map(object):
     def opening_room(self):
         return self.room11
 
+player = Player()
+map1 = Map()
+engine = Engine()
+
 def play():
-    player = Player()
-    map1 = Map()
-    engine = Engine()
     engine.play()

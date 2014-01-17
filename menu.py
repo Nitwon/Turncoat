@@ -7,7 +7,7 @@ print "\n" * 20
 
 while True:
 
-    print """
+    print "\n\n" + """
     _________          _______  _        _______  _______  _______ _________
     \__   __/|\     /|(  ____ )( (    /|(  ____ \(  ___  )(  ___  )\__   __/
        ) (   | )   ( || (    )||  \  ( || (    \/| (   ) || (   ) |   ) (   
@@ -29,10 +29,12 @@ while True:
     
     error = False
     
+    print "\n\n\n\n"
+    
     option = raw_input('> ')
 
     if option == '1':
-        main.play
+        main.play()
     elif option == '2':
         exit(1)
     else:

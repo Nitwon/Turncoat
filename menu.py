@@ -26,12 +26,14 @@ While True:
         print "\n                That's not an option!\n"
     else:
         print "\n\n"
+    
+    error = False
+    
     option = raw_input('> ')
 
     if option == '1':
         main.play
     elif option == '2':
         exit(1)
-    else
-        print "That's not an option!"
-    
+    else:
+        error = True

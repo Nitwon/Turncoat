@@ -209,18 +209,18 @@ class Room11(Room): #Starting room with bodies and laser gun (dark).
             print "DEBUG: No audio here..."
     
     def desc_echo(self):
-        print "Your echolocation array detects three long, sound-absorbing OBJECTS scattered"
+        print "Your echolocation array detects three long, sound-absorbing objects scattered"
         print "around the floor."
     
     def desc_bw(self):
         if "light" in player.tools:
             print "Your light illuminates the room to reveal that the light fixtures are broken."
-            print "There are what appear to be three PEOPLE in white coats lying on the floor."
+            print "There are what appear to be three people in white coats lying on the floor."
             if self.laser == True:
-                print "There is some sort of pointed robot PART on the ground near one of the people."
+                print "There is some sort of pointed robot part on the ground near one of the people."
         else:
             print "The lights are out. You see only darkness. Your echolocation array detects three"
-            print "long, sound-absorbing OBJECTS scattered around the floor."
+            print "long, sound-absorbing objects scattered around the floor."
     
     def desc_hd(self):
         if "light" in player.tools:
@@ -229,10 +229,10 @@ class Room11(Room): #Starting room with bodies and laser gun (dark).
             print "that they were damaged by a laser weapon. There are three dead BODIES on the"
             print "floor wearing white coats, obviously wounded by a similar laser weapon."
             if self.laser == True:
-                "There is a LASER GUN on the floor, suitable for attaching to a droid unit."
+                "There is a laser gun on the floor, suitable for attaching to a droid unit."
         else:
             print "The lights are out. You see only darkness. Your echolocation array detects three"
-            print "long, sound-absorbing OBJECTS scattered around the floor."
+            print "long, sound-absorbing objects scattered around the floor."
     
     def act(self, keyword_in, action_in):
         if action_in == ['unholster', 'banana']:
@@ -269,14 +269,14 @@ class Room11(Room): #Starting room with bodies and laser gun (dark).
         
         elif keyword_in == 'look' and ('bodies' in action_in or 'objects' in action_in or 'people' in action_in or 'humans' in action_in):
             if 'cam_hd' in player.tools:
-                print "These PEOPLE appear to have been killed by laser blasts to their chests and"
+                print "These people appear to have been killed by laser blasts to their chests and"
                 print "abdominal areas."
             elif 'cam_bw' in player.tools:
-                print "Closer inspection shows that these PEOPLE are probably dead, with large, dark"
+                print "Closer inspection shows that these people are probably dead, with large, dark"
                 print "scorch marks on their torsos."
             else:
-                print "These unknown OBJECTS are about 1.5 to 1.8 metres long and a bit soft to the"
-                print "touch. Are these HUMANS?"
+                print "These unknown objects are about 1.5 to 1.8 metres long and a bit soft to the"
+                print "touch."
             return map1.room11
         else:
             return "error"
@@ -510,11 +510,38 @@ class Room23(Room): #Greyscale camera room (NOT DONE YET!)
         self.cam_on_floor = True
     
     def desc_echo(self):
-		pass
+		print "You are in an empty room with a metallic object on the floor in one corner,"
+        print "with an open doorway to the west."
+    
+    def desc_bw(self):
+        print "You are in an empty room with an open doorway to the west."
+        
     def desc_hd(self):
         print "You are in an empty room. The marks on the floor and walls suggest that this"
-        print "might have had some office furnature in it at one time, but that it was"
+        print "might have had some office furniture in it at one time, but that it was"
         print "emptied out."
+    
+    def act(self, keyword_in, action_in):
+        if keyword_in == 'go' and 'west' in action_in:
+            print "You exit through the door to the west."
+            player.charge -= 1
+            return map1.room13
+        
+        elif keyword_in == 'look':
+            if 'object' in action_in or 'camera' in action_in:
+                print "This appears to be a damaged camera of some sort. You should be able to fit it"
+                print "to your peripheral connectors."
+                return map1.room23
+        
+        elif keyword_in == 'use':
+            if 'object' in action_in or 'camera' in action_in:
+                print "After a bit of tweaking, you are able to fit the camera and activate it."
+                print "It appears to be a black and white camera and the damage means that the image"
+                print "is quite grainy, but this is much better than having no visual input at all!"
+                player.sensors.append('cam_bw')
+                return map1.room23
+                
+        return 'error'
 
 
 class Room31(Room): #Security console room.
@@ -555,6 +582,7 @@ class Room31(Room): #Security console room.
                     print "From the whirring sound it is making, this console appears to be active."
                     print "Maybe you can interface with it."
                 return map1.room31
+                
         elif keyword_in == 'use':
             if 'console' in action_in:
                 print "You successfully interface with the console and are able to see the video feeds"

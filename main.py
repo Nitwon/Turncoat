@@ -210,7 +210,7 @@ class Room11(Room): #Starting room with bodies and laser gun (dark).
     
     def desc_echo(self):
         print "Your echolocation array detects three long, sound-absorbing objects scattered"
-        print "around the floor."
+        print "around the floor. The only exit is to the east."
     
     def desc_bw(self):
         if "light" in player.tools:
@@ -253,6 +253,10 @@ class Room11(Room): #Starting room with bodies and laser gun (dark).
             print "You go through the open doorway to the EAST."
             player.charge -= 1
             return map1.room21
+            
+        elif keyword_in == 'look' and not ('echo' in player.sensors):
+            print "You can't look at anything right now. You're blind."
+            return map1.room11
         
         elif keyword_in == 'get' and ('laser' in action_in or 'gun' in action_in or 'part' in action_in):
             print "You pick up the robot PART from the floor and attach it to yourself. It seems to"
@@ -436,7 +440,7 @@ class Room21(Room): #Second room with echolocation, laser cutter and charger.
             print "fitting to your own peripheral connectors."
             return map1.room21
         
-        elif keyword_in == 'use' and ('object' in action_in or 'charger' in action_in or 'unit' in action_in or 'cube' in action_in):
+        elif keyword_in == 'use' and ('object' in action_in or 'charger' in action_in or 'unit' in action_in or 'cube' in action_in or 'battery' in action_in or 'contacts' in action_in):
             print "You reverse up to the unit and engage your charging port with it. Within a few"
             print "minutes your battery is fully charged to %d units." % player.chargemax
             player.charge = player.chargemax

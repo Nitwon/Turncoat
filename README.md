@@ -16,6 +16,6 @@ How to play
 
 Download Python 2.7.6 from http://www.python.org/download/ and install it, if you don't already have it.
 
-Put main.py and menu.py in a folder together and run menu.py.
+Put main.py and menu.py (from the latest NUMBERED version, e.g. v0.2) in a folder together and run menu.py.
 
 Google is your friend!

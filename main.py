@@ -562,9 +562,8 @@ class Room31(Room): #Security console room.
                 print "access the last seconds of the camera's recorded surveillance, showing it being"
                 print "broken from the wall by an unseen force.",
                 if map1.room23.cam_on_floor == True: #For goodness' sake don't forget to add this to room 23...
-                    print "The room's other camera shows the"
-                    print "missing one laying on the floor."
-                      #12345678901234567890123456789012345678901234567890123456789012345678901234567890
+                    print "The room's other camera shows this first camera lying on the floor."
+                return map1.room31
         
         return 'error'
 

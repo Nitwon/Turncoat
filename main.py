@@ -503,7 +503,7 @@ class Room22(Room): #Corridor going east-west with south door.
         return "error"
 
         
-class Room23(Room): #Greyscale camera room (NOT DONE YET!)
+class Room23(Room): #Greyscale camera room
     def __init__(self):
         self.discovered = False
         self.location = "x: 2, y: 3"
@@ -711,8 +711,10 @@ class Map(object):
     def __init__(self):
         self.room11 = Room11()
         self.room12 = Room12()
+        self.room13 = Room13()
         self.room21 = Room21()
         self.room22 = Room22()
+        self.room23 = Room23()
         self.room31 = Room31()
         self.room32 = Room32()
         self.room33 = Room33()

@@ -1,7 +1,7 @@
-I, A.I.
-=======
+Turncoat
+========
 
-In "I, A.I." you are a robot who must make right what is wrong.
+In Turncoat, you are a robot who must fight its own kind to save humanity.
 
 It is a Python 2 text adventure which serves mainly as a learning excercise for
 me to learn how to program. As such, I imagine the style will be terrible!

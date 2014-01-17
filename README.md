@@ -10,3 +10,12 @@ If you want to properly play this game, I suggest that you don't try it until
 it's finished, so that there are no spoilers.
 
 I'm also only just getting used to using GitHub, so... yeah.
+
+How to play
+===========
+
+Download Python 2.7.6 from http://www.python.org/download/ and install it, if you don't already have it.
+
+Put main.py and menu.py in a folder together and run menu.py.
+
+Google is your friend!

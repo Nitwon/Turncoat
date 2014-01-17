@@ -35,7 +35,9 @@ while True:
 
     if option == '1':
         main.play()
+    
     elif option == '2':
         exit(1)
+    
     else:
         error = True

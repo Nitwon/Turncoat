@@ -510,7 +510,7 @@ class Room23(Room): #Greyscale camera room (NOT DONE YET!)
         self.cam_on_floor = True
     
     def desc_echo(self):
-		print "You are in an empty room with a metallic object on the floor in one corner,"
+        print "You are in an empty room with a metallic object on the floor in one corner,"
         print "with an open doorway to the west."
     
     def desc_bw(self):

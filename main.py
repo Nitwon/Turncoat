@@ -503,7 +503,7 @@ class Room22(Room): #Corridor going east-west with south door.
         return "error"
 
         
-class Room23(Room): #Thermal camera room (NOT DONE YET!)
+class Room23(Room): #Greyscale camera room (NOT DONE YET!)
     def __init__(self):
         self.discovered = False
         self.location = "x: 2, y: 3"
@@ -512,8 +512,9 @@ class Room23(Room): #Thermal camera room (NOT DONE YET!)
     def desc_echo(self):
 		pass
     def desc_hd(self):
-        print "You are in a room full of test equipment"
-              #12345678901234567890123456789012345678901234567890123456789012345678901234567890
+        print "You are in an empty room. The marks on the floor and walls suggest that this"
+        print "might have had some office furnature in it at one time, but that it was"
+        print "emptied out."
 
 
 class Room31(Room): #Security console room.
@@ -692,7 +693,8 @@ class Map(object):
     def opening_room(self):
         return self.room11
 
-player = Player()
-map1 = Map()
-engine = Engine()
-engine.play()
+def play():
+    player = Player()
+    map1 = Map()
+    engine = Engine()
+    engine.play()

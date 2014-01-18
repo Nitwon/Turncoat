@@ -25,7 +25,7 @@ class NoCase(object):
         return self.__s == other
 
 
-class Engine(object):
+class Engine(object): #This guy loops to play the game
 
     def __init__(self):
         self.room_map = map1
@@ -37,6 +37,11 @@ class Engine(object):
         
         wipe()
         print "\n" * 100
+        
+        time.sleep(0.5)
+        
+        print "You awaken.\n"
+        print "Your memory has been purged. All you have is your firmware."
         
         while True:
             
@@ -67,6 +72,7 @@ class Engine(object):
             keyword = self.parse(action)                        #Scan for list of keywords, return standardised keyword
             
             wipe()
+            time.sleep(0.2)
             print "\n" * 100
             
             room_returned = current_room.act(keyword, action)   #Give the current room a keyword and action to see what happens
@@ -74,11 +80,11 @@ class Engine(object):
             self.checkcharge()
             
             if room_returned == "error":
-                self.errortext(action)
+                self.errortext(keyword, action)
             else:
                 current_room = room_returned
     
-    def playerstats(self):
+    def playerstats(self): #Displays the player's current stats
     
         print "CHARGE LEVEL:  [" + ("#" * player.charge) + ("." * (player.chargemax - player.charge)) + "] " + str(player.charge) + "/" + str(player.chargemax)
         
@@ -112,9 +118,12 @@ class Engine(object):
                 print player.memory[i + 1],
             print "]"
     
-    def parse(self, parse_in):
+    def parse(self, parse_in): #Understands the first word in the player's command
         if parse_in[0] in ['go', 'walk', 'move', 'run', 'exit', 'leave', 'escape']:
-            return 'go'
+            if parse_in[1] in ['door', 'exit']:
+                return 'go_error'
+            else:
+                return 'go'
         elif parse_in[0] in ['use', 'press', 'push', 'activate', 'switch', 'charge', 'dock', 'connect', 'attach', 'interface']:
             return 'use'
         elif parse_in[0] in ['examine', 'inspect', 'observe', 'look', 'analyse']:
@@ -133,12 +142,13 @@ class Engine(object):
         elif parse_in[0] in ['die', 'suicide', 'exit', 'quit']: #Suicide command included in parser
             wipe()
             print "\nYour head a splode.\n" # since it only ever does one thing...
+            time.sleep(1)
             exit(1)
         
         else:
             return 'error'
     
-    def checkcharge(self):
+    def checkcharge(self): #Check whether the player has run out of charge
         if player.charge < 0:
             self.wipe()
             print "Your battery is completely discharged. With your final trickle of charge you"
@@ -147,31 +157,33 @@ class Engine(object):
             print "have enough to get back to your nearest charger."+ ("\n"*4)
             exit(1)
     
-    def errortext(self, error_in):
+    def errortext(self, keyword_in, action_in): #Show meaningful error text on wrong command
     
-        if error_in[0] == 'go':
+        if keyword_in == 'go':
             print "You can't go there."
-        elif error_in[0] == 'use':
+        elif keyword_in == 'go_error':
+            print "You'll have to specify a direction."
+        elif keyword_in == 'use':
             print "You can't do that."
-        elif error_in[0] == 'look':
+        elif keyword_in == 'look':
             print "You observe nothing of interest."
-        elif error_in[0] == 'get':
+        elif keyword_in == 'get':
             print "You can't have that. It probably doesn't even exist."
-        elif error_in[0] == 'drop':
+        elif keyword_in == 'drop':
             print "You don't have one of those."
-        elif error_in[0] == 'talk':
+        elif keyword_in == 'talk':
             print "You try to establish communication, but there is no response."
-        elif error_in[0] == 'attack':
+        elif keyword_in == 'attack':
             print "Careful, now! You might damage yourself."
-        elif error_in[0] == 'scan' and error_in[1] in player.sensors:
-            print "You scan the area with your '%s' scanner but observe nothing of relevance." % error_in[1]
-        elif error_in[0] == 'scan' and error_in[1] not in player.sensors:
-            print "SCAN ERROR: '%s' is not a recognised peripheral" % error_in[1]
+        elif keyword_in == 'scan' and action_in[1] in player.sensors:
+            print "You scan the area with your '%s' scanner but observe nothing of relevance." % action_in[1]
+        elif keyword_in == 'scan' and action_in[1] not in player.sensors:
+            print "SCAN ERROR: '%s' is not a recognised peripheral" % action_in[1]
         else:
             print "DOES NOT COMPUTE"
 
 
-class Player(object):
+class Player(object): #The player's stats and inventory live here
     def __init__(self):
         self.sensors = ['audio']
         self.tools = ['claw_arm']
@@ -621,13 +633,16 @@ class Room32(Room): #Corridor with north & sound doors, open west.
     
     def desc_echo(self):
         print "You are in an empty corridor, open to the west, with an open door to the north."
+        print "There is a shallow recess in the east wall in the shape of a closed door."
         if map1.room31.door_open == False:
-            print "There is a shallow recess in the south wall in the shape of a door."
+            print "There is a shallow recess in the south wall in the shape of a closed door."
         else:
             print "The door to the south is open."
     
     def desc_bw(self):
         print "You are in an empty corridor, open to the west, with an open door to the north."
+        print "There is a closed door to the east with what looks like a key-card reader"
+        print "beside it. You won't be able to get through here without the right key-card."
         if map1.room31.door_open == False:
             print "There is a closed, bulky-looking metal door to the south."
         else:
@@ -647,6 +662,14 @@ class Room32(Room): #Corridor with north & sound doors, open west.
                 print "You go along the corridor to the west."
                 player.charge -= 1
                 return map1.room22
+            elif 'east' in action_in:
+                if 'key_32' in player.inventory:
+                    print "You swipe the key card to open the east door and proceed through it."
+                    player.charge -= 1
+                    return map1.room42
+                else:
+                    print "This door needs a key card."
+                    return map1.room32
             elif 'north' in action_in:
                 print "You go through the open door to the north."
                 player.charge -= 1

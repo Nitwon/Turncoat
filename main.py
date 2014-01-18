@@ -1,6 +1,14 @@
 from sys import exit
 from random import randint
 from time import sleep
+import os
+import time
+
+def wipe():
+    if os.name == 'nt':
+        os.system('cls')
+    else:
+        os.system('clear')
 
 
 class NoCase(object):
@@ -27,7 +35,8 @@ class Engine(object):
         prompt = "\n> "
         current_room = self.room_map.opening_room()
         
-        self.wipe()
+        wipe()
+        print "\n" * 100
         
         while True:
             
@@ -57,7 +66,8 @@ class Engine(object):
             
             keyword = self.parse(action)                        #Scan for list of keywords, return standardised keyword
             
-            self.wipe()
+            wipe()
+            print "\n" * 100
             
             room_returned = current_room.act(keyword, action)   #Give the current room a keyword and action to see what happens
             
@@ -67,9 +77,6 @@ class Engine(object):
                 self.errortext(action)
             else:
                 current_room = room_returned
-    
-    def wipe(self):
-        print "\n" * 24
     
     def playerstats(self):
     
@@ -123,8 +130,9 @@ class Engine(object):
         elif parse_in[0] == 'scan':
             return 'scan'
             
-        elif parse_in[0] in ['die', 'suicide']: #Suicide command included in parser
-            print ("\n"*20) + "Your head a splode." + ("\n"*4) # since it only ever does one thing...
+        elif parse_in[0] in ['die', 'suicide', 'exit', 'quit']: #Suicide command included in parser
+            wipe()
+            print "\nYour head a splode.\n" # since it only ever does one thing...
             exit(1)
         
         else:
@@ -226,7 +234,7 @@ class Room11(Room): #Starting room with bodies and laser gun (dark).
         if "light" in player.tools:
             print "Your light illuminates the room to reveal that the light fixtures are broken."
             print "From the way the broken light coverings are scorched and melted, it would appear"
-            print "that they were damaged by a laser weapon. There are three dead BODIES on the"
+            print "that they were damaged by a laser weapon. There are three dead bodies on the"
             print "floor wearing white coats, obviously wounded by a similar laser weapon."
             if self.laser == True:
                 "There is a laser gun on the floor, suitable for attaching to a droid unit."
@@ -254,36 +262,39 @@ class Room11(Room): #Starting room with bodies and laser gun (dark).
             player.charge -= 1
             return map1.room21
             
-        elif keyword_in == 'look' and not ('echo' in player.sensors):
-            print "You can't look at anything right now. You're blind."
-            return map1.room11
+        elif keyword_in == 'look':
+            if not 'echo' in player.sensors:
+                print "You can't look at anything right now. You're blind."
+                return map1.room11
+            elif 'laser' in action_in or 'gun' in action_in or 'part' in action_in:
+                if ('cam_bw' in player.sensors or 'cam_hd' in player.sensors) and 'light' in player.tools:
+                    print "This appears to be a LASER GUN attachment suitable for fitting to a droid unit."
+                else:
+                    print "How did you know that was there!? Cheater!"
+                return map1.room11
+            elif 'bodies' in action_in or 'objects' in action_in or 'people' in action_in or 'humans' in action_in:
+                if 'cam_hd' in player.sensors:
+                    print "These people appear to have been killed by laser blasts to their chests and"
+                    print "abdominal areas."
+                elif 'cam_bw' in player.sensors:
+                    print "Closer inspection shows that these people are probably dead, with large, dark"
+                    print "scorch marks on their torsos."
+                else:
+                    print "These unknown objects are about 1.5 to 1.8 metres long and a bit soft to the"
+                    print "touch."
+                return map1.room11
+            
+        elif keyword_in == 'get':
+            if ('laser' in action_in or 'gun' in action_in or 'part' in action_in):
+                if 'laser_gun' in player.tools:
+                    print "You already got that."
+                else:
+                    print "You pick up the robot part from the floor and attach it to yourself. It seems to"
+                    print "be a fully functioning laser weapon and is working fine."
+                    player.tools.append('laser_gun')
+                return map1.room11
         
-        elif keyword_in == 'get' and ('laser' in action_in or 'gun' in action_in or 'part' in action_in):
-            print "You pick up the robot PART from the floor and attach it to yourself. It seems to"
-            print "be a fully functioning laser weapon and is working fine."
-            player.tools.append('laser')
-            return map1.room11
-        
-        elif keyword_in == 'look' and ('laser' in action_in or 'gun' in action_in or 'part' in action_in):
-            if 'cam_bw' in player.tools or 'cam_hd' in player.tools:
-                print "This appears to be a LASER GUN attachment suitable for fitting to a droid unit."
-            else:
-                print "How did you know that was there!? Cheater!"
-            return map1.room11
-        
-        elif keyword_in == 'look' and ('bodies' in action_in or 'objects' in action_in or 'people' in action_in or 'humans' in action_in):
-            if 'cam_hd' in player.tools:
-                print "These people appear to have been killed by laser blasts to their chests and"
-                print "abdominal areas."
-            elif 'cam_bw' in player.tools:
-                print "Closer inspection shows that these people are probably dead, with large, dark"
-                print "scorch marks on their torsos."
-            else:
-                print "These unknown objects are about 1.5 to 1.8 metres long and a bit soft to the"
-                print "touch."
-            return map1.room11
-        else:
-            return "error"
+        return "error"
 
 
 class Room12(Room): #Corridor North to East
@@ -315,7 +326,7 @@ class Room12(Room): #Corridor North to East
             return 'error'
 
 
-class room13(Room): #Corridor north-south with east door
+class Room13(Room): #Corridor north-south with east door
     def __init__(self):
         self.discovered = False
         self.location = "x: 1, y: 3"
@@ -386,91 +397,88 @@ class Room21(Room): #Second room with echolocation, laser cutter and charger.
             print ""
     
     def act(self, keyword_in, action_in):
+    
+        if keyword_in == 'go':
+            if 'west' in action_in:
+                print "You go through the open doorway to the west."
+                player.charge -= 1
+                return map1.room11
+            elif 'north' in action_in:
+                print "You go through the open doorway to the north."
+                player.charge -= 1
+                return map1.room22
         
-        if keyword_in == 'go' and 'west' in action_in:
-            print "You go through the open doorway to the west."
-            player.charge -= 1
-            return map1.room11
-        
-        elif keyword_in == 'go' and 'north' in action_in:
-            print "You go through the open doorway to the north."
-            player.charge -= 1
-            return map1.room22
-        
-        elif keyword_in == 'look' and ('object' in action_in or 'charger' in action_in or 'unit' in action_in or 'cube' in action_in):
-            if 'cam_hd' in player.sensors:
-                print "It is a high-speed DROID-EX charging unit, according to the label, and has a"
-                print "charging port half-way up its front side. The status display indicates that it"
-                print "is powered and ready to charge any docked droid unit."
-            elif 'cam_bw' in player.sensors:
-                print "It is a 40 cm high unit with what looks like a charging port about half-way up"
-                print "its front side. It has a small display which is un-readable with this fuzzy"
-                print "camera, but appears to be illuminated. That's good, right?"
-            elif 'echo' in player.sensors:
-                print "It's a 40 cm high, roughly cube-shaped object. Closer inspection reveals some"
-                print "kind of protrusion half-way up its front side with metallic contacts. As your"
-                print "claw touches the contacts, you hear a spark buzz through your claw. It looks"
-                print "like these contacts are live - could this be used for charging your battery?"
-            return map1.room21
-        
-        elif keyword_in == 'look' and ('worktop' in action_in):
-            if 'cam_hd' in player.sensors:
-                print "The worktop spans the entire east wall.",
-                if map1.room21.laser_cutter == True:
-                    print "At one end, there rests a small laser"
-                    print "cutter device."
-            elif 'cam_bw' in player.sensors:
-                print "The worktop spans the entire east wall."
-                if map1.room21.laser_cutter == True:
-                    print "There is something on it but with this"
-                    print "fuzzy camera it is impossible to tell what it is."
-            elif 'echo' in player.sensors:
-                print "The worktop spans the entire east wall."
-            return map1.room21
-        
-        elif keyword_in == 'look' and ('laser' in action_in or 'device' in action_in or 'cutter' in action_in or 'tool' in action_in) and map1.room21.echo == False:
-            if 'cam_hd' in player.sensors:
+        elif keyword_in == 'look':
+            if 'object' in action_in or 'charger' in action_in or 'unit' in action_in or 'cube' in action_in:
+                if 'cam_hd' in player.sensors:
+                    print "It is a high-speed DROID-EX charging unit, according to the label, and has a"
+                    print "charging port half-way up its front side. The status display indicates that it"
+                    print "is powered and ready to charge any docked droid unit."
+                elif 'cam_bw' in player.sensors:
+                    print "It is a 40 cm high unit with what looks like a charging port about half-way up"
+                    print "its front side. It has a small display which is un-readable with this fuzzy"
+                    print "camera, but appears to be illuminated. That's good, right?"
+                elif 'echo' in player.sensors:
+                    print "It's a 40 cm high, roughly cube-shaped object. Closer inspection reveals some"
+                    print "kind of protrusion half-way up its front side with metallic contacts. As your"
+                    print "claw touches the contacts, you hear a spark buzz through your claw. It looks"
+                    print "like these contacts are live - could this be used for charging your battery?"
+                return map1.room21
+            elif 'worktop' in action_in:
+                if 'cam_hd' in player.sensors:
+                    print "The worktop spans the entire east wall.",
+                    if map1.room21.laser_cutter == True:
+                        print "At one end, there rests a small laser"
+                        print "cutter device."
+                elif 'cam_bw' in player.sensors:
+                    print "The worktop spans the entire east wall."
+                    if map1.room21.laser_cutter == True:
+                        print "There is something on it but with this"
+                        print "fuzzy camera it is impossible to tell what it is."
+                elif 'echo' in player.sensors:
+                    print "The worktop spans the entire east wall."
+                return map1.room21
+            elif ('laser' in action_in or 'device' in action_in or 'cutter' in action_in or 'tool' in action_in) and map1.room21.echo == False and map1.room21.laser_cutter == True and 'cam_hd' in player.sensors:
                 print "The laser cutter device looks fit for attaching to your one of your peripheral"
                 print "sockets."
-            return map1.room21
+                return map1.room21
+            elif 'device' in action_in and map1.room21.echo == True:
+                print "You inspect the DEVICE by prodding and gripping it with your claw, and"
+                print "determine that it must be an echolocation peripheral device, suitable for"
+                print "fitting to your own peripheral connectors."
+                return map1.room21
         
-        elif keyword_in == 'look' and ('device' in action_in) and map1.room21.echo == True:
-            print "You inspect the DEVICE by prodding and gripping it with your claw, and"
-            print "determine that it must be an echolocation peripheral device, suitable for"
-            print "fitting to your own peripheral connectors."
-            return map1.room21
+        elif keyword_in == 'use':
+            if 'object' in action_in or 'charger' in action_in or 'unit' in action_in or 'cube' in action_in or 'battery' in action_in or 'contacts' in action_in:
+                print "You reverse up to the unit and engage your charging port with it. Within a few"
+                print "minutes your battery is fully charged to %d units." % player.chargemax
+                player.charge = player.chargemax
+                return map1.room21
         
-        elif keyword_in == 'use' and ('object' in action_in or 'charger' in action_in or 'unit' in action_in or 'cube' in action_in or 'battery' in action_in or 'contacts' in action_in):
-            print "You reverse up to the unit and engage your charging port with it. Within a few"
-            print "minutes your battery is fully charged to %d units." % player.chargemax
-            player.charge = player.chargemax
-            return map1.room21
-        
-        elif (keyword_in == 'use' or keyword_in == 'get') and ('laser' in action_in or 'device' in action_in) and map1.room21.echo == False:
-            if 'cam_hd' in player.sensors and map1.room21.laser_cutter == True:
+        elif keyword_in == 'get':
+            if ('laser' in action_in or 'device' in action_in) and map1.room21.echo == False and map1.room21.laser_cutter == True and 'cam_hd' in player.sensors:
                 print "You pick up the laser cutter and fit it to one of your peripheral sockets."
                 player.tools.append('laser_cutter')
                 map1.room21.laser_cutter = False
-            return map1.room21
+                return map1.room21
+            elif ('device' in action_in) and map1.room21.echo == True:
+                print "You pull the DEVICE from what is probably a test stand. As its cable falls"
+                print "loose it stops ticking. The connector appears to be compatible with your"
+                print "peripheral connectors, so you plug it into one of your top connectors."
+                print "As the echolocation module comes online, it gives you a fairly good idea of"
+                print "your surroundings, in terms of rough, colourless shapes."
+                player.sensors.append('echo')
+                map1.room21.echo = False
+                print "You become aware of the fact that the voltage from your battery pack is"
+                print "starting to slowly decline. You will not have enough charge to leave this room."
+                print "\nTUTORIAL: There will be no more capitalised keywords from now on! You can be"
+                print "quite flexible with your commands. Try typing what feels natural. If that"
+                print "doesn't work, think of something more robotic sounding!"
+                return map1.room21
         
-        elif (keyword_in == 'use' or keyword_in == 'get') and ('device' in action_in) and map1.room21.echo == True:
-            print "You pull the DEVICE from what is probably a test stand. As its cable falls loose"
-            print "it stops ticking. The connector appears to be compatible with your peripheral"
-            print "connectors, so you plug it into one of your top connectors."
-            print "As the echolocation module comes online, it gives you a fairly good idea of"
-            print "your surroundings, in terms of rough, colourless shapes."
-            player.sensors.append('echo')
-            map1.room21.echo = False
-            print "You become aware of the fact that the voltage from your battery pack is starting"
-            print "to slowly decline. You will not have enough charge to leave this room."
-            print "\nTUTORIAL: There will be no more capitalised keywords from now on! You can be"
-            print "quite flexible with your commands. Try typing what feels natural. If that"
-            print "doesn't work, think of something more robotic sounding!"
-            return map1.room21
-        else:
-            return "error"
+        return 'error'
 
-            
+
 class Room22(Room): #Corridor going east-west with south door.
     def __init__(self):
         self.discovered = False
@@ -506,7 +514,7 @@ class Room22(Room): #Corridor going east-west with south door.
 
         return "error"
 
-        
+
 class Room23(Room): #Greyscale camera room
     def __init__(self):
         self.discovered = False
@@ -537,7 +545,7 @@ class Room23(Room): #Greyscale camera room
                 print "to your peripheral connectors."
                 return map1.room23
         
-        elif keyword_in == 'use':
+        elif keyword_in == 'get':
             if 'object' in action_in or 'camera' in action_in:
                 print "After a bit of tweaking, you are able to fit the camera and activate it."
                 print "It appears to be a black and white camera and the damage means that the image"
@@ -556,8 +564,8 @@ class Room31(Room): #Security console room.
     
     def desc_echo(self):
         print "Half of this room is dominated by what appears to be a huge console surrounding"
-        print "a single seat. If this is indeed a console, you should be able to interface with"
-        print "it. The only way out is back through the door to the north."
+        print "a single seat. If this is indeed a console, you should be able to interface"
+        print "with it. The only way out is back through the door to the north."
     
     def desc_bw(self):
         print "Half of this room is dominated by what appears to be a security console, which"
@@ -567,12 +575,13 @@ class Room31(Room): #Security console room.
         print "door to the north."
     
     def desc_hd(self):
-        print "Half of this room is dominated by a huge security console, with monitors showing"
-        print "a few different office rooms. There is a single, worn seat where a security-"
-        print "guard type probably used to sit. You should be able to interface with this"
-        print "console. The only way out is back through the door to the north."
+        print "Half of this room is dominated by a huge security console, with monitors"
+        print "showing a few different office rooms. There is a single, worn seat where a"
+        print "security-guard type probably used to sit. You should be able to interface with"
+        print "this console. The only way out is back through the door to the north."
     
     def act(self, keyword_in, action_in):
+    
         if keyword_in == 'go' and 'north' in action_in:
             print "You exit through the door to the north."
             player.charge -= 1
@@ -595,7 +604,11 @@ class Room31(Room): #Security console room.
                 print "access the last seconds of the camera's recorded surveillance, showing it being"
                 print "broken from the wall by an unseen force.",
                 if map1.room23.cam_on_floor == True: #For goodness' sake don't forget to add this to room 23...
-                    print "The room's other camera shows this first camera lying on the floor."
+                    print "The room's other camera shows this\nfirst camera lying on the floor."
+                if not 'map' in player.sensors:
+                    print "\nYou downloaded the room location software from the console and can now keep"
+                    print "track of which room you're in by its coordinates!"
+                    player.sensors.append('map')
                 return map1.room31
         
         return 'error'
@@ -650,7 +663,7 @@ class Room32(Room): #Corridor with north & sound doors, open west.
         elif keyword_in == 'look' and 'door' in action_in:
             if map1.room31.door_open == False:
                 print "The south door is tightly shut. It doesn't look like you can open it"
-                print "without the correct authentication file."
+                print "without releasing its locks from elsewhere."
                 return map1.room32
             else:
                 print "The door to the south is open."
@@ -731,5 +744,51 @@ player = Player()
 map1 = Map()
 engine = Engine()
 
-def play():
-    engine.play()
+def play(option):
+
+    if option == 1:
+        wipe()
+        print "BOOT",
+        time.sleep(1)
+        print "\b.",
+        time.sleep(1)
+        print "\b.",
+        time.sleep(1)
+        print "\b."
+        time.sleep(1.5)
+        print "DROID_EX02 ONLINE"
+        time.sleep(2)
+        print "\nSystem diagnostic:"
+        time.sleep(1)
+        print "    CPU:                  OKAY"
+        time.sleep(0.2)
+        print "    memory:               OKAY"
+        time.sleep(0.2)
+        print "    firmware:             OKAY"
+        time.sleep(0.4)
+        print "    non-volotile storage: ERROR - REQUIRES FORMATTING"
+        time.sleep(2)
+        print "\nPeripheral diagnostic:"
+        time.sleep(1)
+        print "    audio_in_mic:         OKAY"
+        time.sleep(0.2)
+        print "    echolocation:         ERROR - PERIPHERAL WAS UNSAFELY REMOVED"
+        time.sleep(0.1)
+        print "    video_in_hd_cam:      ERROR - PERIPHERAL WAS UNSAFELY REMOVED"
+        time.sleep(0.2)
+        print "    em_wideband_sensor:   ERROR - PERIPHERAL WAS UNSAFELY REMOVED"
+        time.sleep(0.1)
+        print "    location_module:      ERROR - PERIPHERAL WAS UNSAFELY REMOVED"
+        time.sleep(0.1)
+        print "    arm_claw_unit:        OKAY"
+        time.sleep(0.2)
+        print "    battery_10Ah:         ERROR - PERIPHERAL WAS UNSAFELY REMOVED"
+        time.sleep(5)
+        print "\n=== Initiate A.I. ==="
+        time.sleep(3)
+        wipe()
+        
+        engine.play()
+        
+    elif option == 2:
+        engine.play()

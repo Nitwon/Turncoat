@@ -3,10 +3,10 @@ import main
 
 error = False
 
-print "\n" * 20
-
 while True:
 
+    main.wipe()
+    
     print "\n\n" + """
     _________          _______  _        _______  _______  _______ _________
     \__   __/|\     /|(  ____ )( (    /|(  ____ \(  ___  )(  ___  )\__   __/
@@ -20,6 +20,7 @@ while True:
             
             Enter a number to choose an option:
                 1. Start game
+                2. Start game without intro sequence
                 2. Exit
 """
     if error == True:
@@ -29,14 +30,15 @@ while True:
     
     error = False
     
-    print "\n\n\n\n"
-    
     option = raw_input('> ')
 
     if option == '1':
-        main.play()
+        main.play(1)
     
     elif option == '2':
+        main.play(2)
+    
+    elif option == '3':
         exit(1)
     
     else:

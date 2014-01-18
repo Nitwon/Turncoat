@@ -21,7 +21,7 @@ while True:
             Enter a number to choose an option:
                 1. Start game
                 2. Start game without intro sequence
-                2. Exit
+                3. Exit
 """
     if error == True:
         print "\n                That's not an option!\n"

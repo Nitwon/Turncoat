@@ -284,11 +284,11 @@ class Room11(Room): #Starting room with bodies and laser gun (dark).
                 else:
                     print "How did you know that was there!? Cheater!"
                 return map1.room11
-            elif 'bodies' in action_in or 'objects' in action_in or 'people' in action_in or 'humans' in action_in:
-                if 'cam_hd' in player.sensors:
+            elif ('bodies' in action_in or 'objects' in action_in or 'people' in action_in or 'humans' in action_in):
+                if 'cam_hd' in player.sensors and 'light' in player.tools:
                     print "These people appear to have been killed by laser blasts to their chests and"
                     print "abdominal areas."
-                elif 'cam_bw' in player.sensors:
+                elif 'cam_bw' in player.sensors and 'light' in player.tools:
                     print "Closer inspection shows that these people are probably dead, with large, dark"
                     print "scorch marks on their torsos."
                 else:
